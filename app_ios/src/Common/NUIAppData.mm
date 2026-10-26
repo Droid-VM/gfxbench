@@ -424,6 +424,7 @@ namespace {
 }
 
 - (void) initFinished {
+    self.serviceReady = YES;
 
     [UIApplication sharedApplication].idleTimerDisabled = NO;
 
@@ -464,6 +465,7 @@ namespace {
 
 - (void)Startup
 {
+    self.serviceReady = NO;
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [UIApplication sharedApplication].idleTimerDisabled = YES;

@@ -39,7 +39,7 @@ set (IOS True)
 # Determine the cmake host system version so we know where to find the iOS SDKs
 find_program (CMAKE_UNAME uname /bin /usr/bin /usr/local/bin)
 if (CMAKE_UNAME)
-	exec_program(uname ARGS -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION)
+	execute_process(COMMAND ${CMAKE_UNAME} -r OUTPUT_VARIABLE CMAKE_HOST_SYSTEM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" DARWIN_MAJOR_VERSION "${CMAKE_HOST_SYSTEM_VERSION}")
 endif (CMAKE_UNAME)
 
@@ -226,7 +226,7 @@ macro (find_host_program)
 
 	find_program(${ARGN})
 
-	set (APPLE)
+	set (APPLE 1)
 	set (UNIX 1)
 	set (IOS TRUE)
 	set (CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)

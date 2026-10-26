@@ -102,6 +102,8 @@ list(APPEND BENCHMARK_RESOURCES "${CMAKE_BINARY_DIR}/theme")
 if (NOT OPT_COMMUNITY_BUILD)
     # add poco for command line options
     find_package(Poco REQUIRED COMPONENTS Util Foundation)
+    # Later framework lookups can overwrite POCO_LIBRARIES with Foundation only.
+    set(APP_POCO_LIBRARIES ${POCO_LIBRARIES})
     add_definitions(${POCO_DEFINITIONS})
 
 endif()
@@ -189,10 +191,12 @@ list(APPEND RESOURCE
             ${BENCHMARK_RESOURCES}
 
             # raw and config (simple folder path to create a "blue" linked folder in Xcode)
-            data
             image
             compare
         )
+if (NOT BUNDLE_DATA)
+    list(APPEND RESOURCE data)
+endif()
 source_group("Assets" FILES ${RESOURCE} )
 
 # Set include directories to allow the files to see each other
@@ -255,7 +259,7 @@ target_link_libraries(${PROJECT_NAME}
         ${APPLY_FIND_LIBRARIES}
         "-framework WebKit -framework UIKit -framework QuartzCore -framework AVFoundation -framework Security -framework CoreMedia -framework CoreText -framework CoreGraphics -framework CoreImage -framework OpenGLES -framework SystemConfiguration"
         "-weak_framework Metal"
-        ${POCO_LIBRARIES}
+        ${APP_POCO_LIBRARIES}
         ${epoxy_LIBRARIES}
         tfw_deviceinfo
         benchmarkservice

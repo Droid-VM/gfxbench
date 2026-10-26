@@ -46,6 +46,8 @@
 
 @property (strong, nonatomic, nonnull) NSMutableDictionary *uiStateCache;
 @property (strong, nonatomic, nullable) NSString *loginName;
+// Initialization may finish before the loading controller appears.
+@property (assign, atomic) BOOL serviceReady;
 
 - (void)addNewAlert:(nonnull UIAlertController *)alert;
 - (nonnull UIAlertController *)getAlert;

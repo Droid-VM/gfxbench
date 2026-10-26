@@ -424,11 +424,15 @@ case $PLATFORM in
             # source $WORKSPACE/app_ios/ios_setup_bundle.sh
         fi
 
-        COMMON_OPTS+=" -DRENDER_API=Metal -DCMAKE_OSX_DEPLOYMENT_TARGET=14"
+        COMMON_OPTS+=" -DRENDER_API=Metal -DCMAKE_OSX_DEPLOYMENT_TARGET=17.0"
         COMMON_OPTS+=" -DBENCHMARK_DIR=${BENCHMARK_DIR} -DBUILD_SHARED_LIBS=0"
         if [ "$APPLICATION_TYPE" = "gui" ]; then
             app_ios_OPTS=" -DOPT_COMMUNITY_BUILD=${COMMUNITY_BUILD}"
             app_ios_TARGET="-t xcarchive"
+            if [ "${DROIDVM_UNSIGNED_APP:-false}" = "true" ]; then
+                app_ios_TARGET="-t app_ios"
+                COMMON_OPTS+=" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO"
+            fi
             PROJECTS+=" app_ios"
         else
             testfw_OPTS=""

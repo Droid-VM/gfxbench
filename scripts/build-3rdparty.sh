@@ -135,7 +135,10 @@ case $PLATFORM in
 	linux_arm|linux_arm64|linux_cross)
 	;;
 	ios|iossim|ios.libstdc++|iossim.libstdc++)
-                COMMON_OPTS="-DCMAKE_OSX_DEPLOYMENT_TARGET=14"
+                COMMON_OPTS="-DCMAKE_OSX_DEPLOYMENT_TARGET=17.0"
+                # The offline corporate app does not need SSL. Do not link host macOS
+                # Homebrew OpenSSL into an iOS target through CMake's package search.
+                poco_OPTS+=" -DDISABLE_OPENSSL=ON -DOPENSSL_FOUND=FALSE"
 	#	COMMON_OPTS="-DCMAKE_C_FLAGS=-fembed-bitcode -DCMAKE_CXX_FLAGS=-fembed-bitcode -DCOMPILE_DEFINITIONS=-Wdeprecated-declarations"
 	;;
 	v120_wp81-arm|v120_wp81-win32|v140_wp81-arm|v140_wp81-win32|v120_rt81-arm|v120_rt81-x86|v120_rt81-x64)

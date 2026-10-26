@@ -15,6 +15,7 @@
 @interface NUILoadingViewController ()
 
 @property (assign, nonatomic) BOOL done;
+@property (assign, nonatomic) BOOL leavingLoading;
 @property (strong, nonatomic) NSMutableArray *alertViews;
 
 @end
@@ -81,6 +82,12 @@
 {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    if ([NUIAppData sharedNUIAppData].serviceReady) [self fadeOut];
 }
 
 - (void)dealloc
@@ -153,8 +160,10 @@
 {
     self.done = true;
 
-    if(self.presentedViewController == nil)
+    if(self.isViewLoaded && self.view.window != nil && self.presentedViewController == nil && !self.leavingLoading) {
+        self.leavingLoading = YES;
         [self performSegueWithIdentifier:@"ShowMainViewSegue" sender:self];
+    }
 }
 
 
