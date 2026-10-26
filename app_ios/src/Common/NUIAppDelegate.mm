@@ -36,10 +36,30 @@
         [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
 
         _viewName = @"TheStoryboard";
+    }
+    catch(NSException *ex)
+    {
+        NSLog(@"-------- INIT ERROR ---------");
+        NSLog(@"%@", ex.reason);
+        NSLog(@"-----------------------------");
+        exit(-1);
+    }
+    catch(...)
+    {
+        NSLog(@"-------- INIT ERROR ---------");
+        exit(-1);
+    }
 
+    return YES;
+}
+
+- (void)showInWindowScene:(UIWindowScene *)scene
+{
+    try
+    {
         if(self.cmdline != nil)
         {
-            self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+            self.window = [[UIWindow alloc] initWithWindowScene:scene];
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:_viewName bundle:nil];
             NUITestViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"NUITestViewController"];
             viewController.CommandLine = self.cmdline;
@@ -47,7 +67,7 @@
         }
         else
         {
-            self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+            self.window = [[UIWindow alloc] initWithWindowScene:scene];
             UIStoryboard *storyboard = [UIStoryboard storyboardWithName:_viewName bundle:nil];
 
             UIViewController *viewController = [storyboard instantiateViewControllerWithIdentifier:@"RootNavigatorVC"];
@@ -76,48 +96,21 @@
         NSLog(@"-------- INIT ERROR ---------");
         exit(-1);
     }
-
-    return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-    [[NSNotificationCenter defaultCenter] postNotificationName:NUI_Request_CancelTest object:self];
-    [[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
-
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
+// With scenes adopted, the active and inactive callbacks go to the scene: NUISceneDelegate.
 
 // GFXBench lays out and renders for a wide screen. On an iPad that is the two landscape orientations; on a panel that is wide
 // in the device's portrait (a virtual machine's 1366x1024 screen, for one) it is portrait and upside-down instead, and the
-// landscape ones would turn the app sideways. Info.plist lists all four on iPad; this picks the wide ones.
+// landscape ones would turn the app sideways. Info.plist lists all four on iPad; this picks the wide ones. From iPadOS 26 a
+// scene's window has whatever shape the user gives it and is not turned for the app: an app that refuses the device's
+// orientation is drawn sideways in it. There every orientation is taken, and the layout follows the window.
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
 {
     if([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad)
         return UIInterfaceOrientationMaskPortrait;
+    if(@available(iOS 26.0, *))
+        return UIInterfaceOrientationMaskAll;
     // nativeBounds is the panel in pixels in the portrait-up orientation, whatever the device's orientation.
     CGSize panel = [[UIScreen mainScreen] nativeBounds].size;
     if(panel.width > panel.height)

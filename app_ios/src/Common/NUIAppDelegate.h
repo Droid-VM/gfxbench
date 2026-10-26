@@ -17,4 +17,7 @@
 @property (strong, nonatomic) NSString *viewName;
 @property (strong, nonatomic) NUIAppInfo *info;
 
+// Make the window in the app's window scene and start (NUISceneDelegate, when the scene connects).
+- (void)showInWindowScene:(UIWindowScene *)scene;
+
 @end
