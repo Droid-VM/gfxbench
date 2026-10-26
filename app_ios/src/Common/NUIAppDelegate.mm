@@ -111,6 +111,20 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+// GFXBench lays out and renders for a wide screen. On an iPad that is the two landscape orientations; on a panel that is wide
+// in the device's portrait (a virtual machine's 1366x1024 screen, for one) it is portrait and upside-down instead, and the
+// landscape ones would turn the app sideways. Info.plist lists all four on iPad; this picks the wide ones.
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    if([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskPortrait;
+    // nativeBounds is the panel in pixels in the portrait-up orientation, whatever the device's orientation.
+    CGSize panel = [[UIScreen mainScreen] nativeBounds].size;
+    if(panel.width > panel.height)
+        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+    return UIInterfaceOrientationMaskLandscape;
+}
+
 - (NUICommandLineParser *)getCmdline
 {
     if(self.cmdline == nil)
