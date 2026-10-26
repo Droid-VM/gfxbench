@@ -100,24 +100,6 @@
 
 // With scenes adopted, the active and inactive callbacks go to the scene: NUISceneDelegate.
 
-// GFXBench lays out and renders for a wide screen. On an iPad that is the two landscape orientations; on a panel that is wide
-// in the device's portrait (a virtual machine's 1366x1024 screen, for one) it is portrait and upside-down instead, and the
-// landscape ones would turn the app sideways. Info.plist lists all four on iPad; this picks the wide ones. From iPadOS 26 a
-// scene's window has whatever shape the user gives it and is not turned for the app: an app that refuses the device's
-// orientation is drawn sideways in it. There every orientation is taken, and the layout follows the window.
-- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
-{
-    if([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad)
-        return UIInterfaceOrientationMaskPortrait;
-    if(@available(iOS 26.0, *))
-        return UIInterfaceOrientationMaskAll;
-    // nativeBounds is the panel in pixels in the portrait-up orientation, whatever the device's orientation.
-    CGSize panel = [[UIScreen mainScreen] nativeBounds].size;
-    if(panel.width > panel.height)
-        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
-    return UIInterfaceOrientationMaskLandscape;
-}
-
 - (NUICommandLineParser *)getCmdline
 {
     if(self.cmdline == nil)
